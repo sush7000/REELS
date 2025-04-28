@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Instagram Reels PC Lite Version</title>
+<title>Instagram Reels PC Normal + Mobile Size</title>
 
 <style>
     body {
         margin: 0;
         background: black;
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
         gap: 20px;
     }
     iframe {
-        width: 320px;
-        height: 566px; /* PC Instagram Reel Size Approx */
+        width: 240px; /* Mobile width */
+        height: 426px; /* Mobile height */
         border: none;
         background: black;
     }
@@ -55,7 +55,7 @@ function shuffle(array) {
     return array;
 }
 
-// Firebase se reels load
+// Load reels from Firebase
 firebase.database().ref('instaReels').once('value').then(snapshot => {
     const reelList = snapshot.val();
     if (reelList) {
@@ -73,7 +73,7 @@ firebase.database().ref('instaReels').once('value').then(snapshot => {
     }
 });
 
-// Reel embed URL generator
+// Reel Embed URL generator
 function getReelEmbedUrl(link) {
     if (link.includes("/reel/")) {
         const id = link.split("/reel/")[1].split("/")[0];
