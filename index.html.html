@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Instagram Reels Lite Version (Firebase)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        background: black;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 0;
+    }
+    iframe {
+        width: 240px;
+        height: 426px; /* Instagram reels 9:16 size */
+        max-width: 100%;
+        border: none;
+        background: black;
+        overflow: hidden;
+    }
+</style>
+
+<!-- Firebase App SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<!-- Firebase Database SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+</head>
+<body>
+
+<div id="reelsContainer"></div>
+
+<script>
+// --- Your Firebase Config ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDz-SNVEJI-grCYJcpaHQ4aIDIwIWaeBt8",
+  authDomain: "mynotes-24988.firebaseapp.com",
+  databaseURL: "https://mynotes-24988-default-rtdb.firebaseio.com",
+  projectId: "mynotes-24988",
+  storageBucket: "mynotes-24988.appspot.com",
+  messagingSenderId: "599177137893",
+  appId: "1:599177137893:web:8eac4ceb0869ebcca4ce0c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Shuffle function
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Reel ID Extractor
+function extractId(url) {
+    const parts = url.split("/");
+    return parts[4] || ""; // 'reel_id' position
+}
+
+// Fetch Instagram Reels from Firebase
+firebase.database().ref('instaReels').once('value').then(snapshot => {
+    const reelList = snapshot.val();
+    if (reelList) {
+        const container = document.getElementById('reelsContainer');
+        const reels = shuffle(Object.values(reelList)); // Random shuffle
+
+        for (let i = 0; i < Math.min(20, reels.length); i++) { // Only 20 reels for super lite
+            const reelId = extractId(reels[i]);
+            if (reelId) {
+                const embedUrl = `https://www.instagram.com/reel/${reelId}/embed`;
+
+                const iframe = document.createElement('iframe');
+                iframe.src = embedUrl;
+                iframe.allow = "autoplay; encrypted-media";
+                iframe.allowFullscreen = true;
+                container.appendChild(iframe);
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
