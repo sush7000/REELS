@@ -2,21 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Instagram Reels PC Normal + Mobile Size</title>
+<title>Instagram Reels (Original Links)</title>
 
 <style>
     body {
         margin: 0;
         background: black;
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
         padding: 10px;
-        gap: 20px;
     }
     iframe {
-        width: 240px; /* Mobile width */
-        height: 426px; /* Mobile height */
+        width: 240px;
+        height: 426px;
+        max-width: 100%;
         border: none;
         background: black;
     }
@@ -64,17 +65,19 @@ firebase.database().ref('instaReels').once('value').then(snapshot => {
 
         for (let i = 0; i < Math.min(20, reels.length); i++) {
             const url = reels[i];
-            const realUrl = getReelEmbedUrl(url);
+            const embedUrl = convertToEmbed(url);
 
             const iframe = document.createElement('iframe');
-            iframe.src = realUrl;
+            iframe.src = embedUrl;
+            iframe.allow = "autoplay; encrypted-media";
+            iframe.allowFullscreen = true;
             container.appendChild(iframe);
         }
     }
 });
 
-// Reel Embed URL generator
-function getReelEmbedUrl(link) {
+// Convert normal reel link to embed URL
+function convertToEmbed(link) {
     if (link.includes("/reel/")) {
         const id = link.split("/reel/")[1].split("/")[0];
         return `https://www.instagram.com/reel/${id}/embed`;
