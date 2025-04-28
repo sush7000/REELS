@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Instagram 20 Tabs Auto Reels</title>
+<title>Instagram Reels Mobile Lite</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -10,22 +10,23 @@
         margin: 0;
         background: black;
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
+        flex-direction: column;
+        align-items: center;
         padding: 10px;
     }
     iframe {
-        width: 180px;
-        height: 320px;
+        width: 240px;
+        height: 426px;
+        max-width: 100%;
         border: none;
         background: black;
+        margin-bottom: 10px;
     }
 </style>
 
-<!-- Firebase App SDK -->
+<!-- Firebase App -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<!-- Firebase Database SDK -->
+<!-- Firebase Database -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 </head>
@@ -47,7 +48,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// Shuffle array utility
+// Shuffle array
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -56,30 +57,29 @@ function shuffle(array) {
     return array;
 }
 
-// Firebase se reels load karo
+// Firebase se reels load
 firebase.database().ref('instaReels').once('value').then(snapshot => {
     const reelList = snapshot.val();
     if (reelList) {
         const container = document.getElementById('reelsContainer');
-        const reels = shuffle(Object.values(reelList)); // Randomize reels
+        const reels = shuffle(Object.values(reelList));
 
         for (let i = 0; i < Math.min(20, reels.length); i++) {
             const url = reels[i];
-            const realUrl = getReelPageUrl(url);
+            const realUrl = getReelEmbedUrl(url);
 
             const iframe = document.createElement('iframe');
             iframe.src = realUrl;
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
             container.appendChild(iframe);
         }
     }
 });
 
-// Reel page link extractor
-function getReelPageUrl(link) {
+// Reel embed URL generator
+function getReelEmbedUrl(link) {
     if (link.includes("/reel/")) {
         const id = link.split("/reel/")[1].split("/")[0];
-        return `https://www.instagram.com/reel/${id}/`;
+        return `https://www.instagram.com/reel/${id}/embed`;
     }
     return link;
 }
