@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Instagram Reels Lite Version (Firebase)</title>
+<title>Instagram 20 Tabs Auto Reels</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -10,18 +10,16 @@
         margin: 0;
         background: black;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 0;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px;
     }
     iframe {
-        width: 240px;
-        height: 426px; /* Instagram reels 9:16 size */
-        max-width: 100%;
+        width: 180px;
+        height: 320px;
         border: none;
         background: black;
-        overflow: hidden;
     }
 </style>
 
@@ -36,7 +34,7 @@
 <div id="reelsContainer"></div>
 
 <script>
-// --- Your Firebase Config ---
+// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyDz-SNVEJI-grCYJcpaHQ4aIDIwIWaeBt8",
   authDomain: "mynotes-24988.firebaseapp.com",
@@ -48,9 +46,8 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
-// Shuffle function
+// Shuffle array utility
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -59,33 +56,33 @@ function shuffle(array) {
     return array;
 }
 
-// Reel ID Extractor
-function extractId(url) {
-    const parts = url.split("/");
-    return parts[4] || ""; // 'reel_id' position
-}
-
-// Fetch Instagram Reels from Firebase
+// Firebase se reels load karo
 firebase.database().ref('instaReels').once('value').then(snapshot => {
     const reelList = snapshot.val();
     if (reelList) {
         const container = document.getElementById('reelsContainer');
-        const reels = shuffle(Object.values(reelList)); // Random shuffle
+        const reels = shuffle(Object.values(reelList)); // Randomize reels
 
-        for (let i = 0; i < Math.min(20, reels.length); i++) { // Only 20 reels for super lite
-            const reelId = extractId(reels[i]);
-            if (reelId) {
-                const embedUrl = `https://www.instagram.com/reel/${reelId}/embed`;
+        for (let i = 0; i < Math.min(20, reels.length); i++) {
+            const url = reels[i];
+            const realUrl = getReelPageUrl(url);
 
-                const iframe = document.createElement('iframe');
-                iframe.src = embedUrl;
-                iframe.allow = "autoplay; encrypted-media";
-                iframe.allowFullscreen = true;
-                container.appendChild(iframe);
-            }
+            const iframe = document.createElement('iframe');
+            iframe.src = realUrl;
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
+            container.appendChild(iframe);
         }
     }
 });
+
+// Reel page link extractor
+function getReelPageUrl(link) {
+    if (link.includes("/reel/")) {
+        const id = link.split("/reel/")[1].split("/")[0];
+        return `https://www.instagram.com/reel/${id}/`;
+    }
+    return link;
+}
 </script>
 
 </body>
